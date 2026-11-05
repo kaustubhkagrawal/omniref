@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-import os
+import argparse
+from importlib.metadata import version
 from typing import Annotated
 
 from fastmcp import FastMCP
@@ -72,10 +73,31 @@ def create_server(registry: ProviderRegistry | None = None) -> FastMCP:
     return mcp
 
 
-def main() -> None:
-    host = os.environ.get("HOST", "127.0.0.1")
-    port = int(os.environ.get("PORT", "8000"))
-    create_server().run(transport="http", host=host, port=port)
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="omniref",
+        description="MCP server: unified image/video reference search for AI generation agents.",
+    )
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "http"],
+        default="stdio",
+        help="stdio (default, for clients that spawn the process) or http (streamable HTTP).",
+    )
+    parser.add_argument("--host", default="127.0.0.1", help="http only. Default: 127.0.0.1.")
+    parser.add_argument("--port", type=int, default=8000, help="http only. Default: 8000.")
+    parser.add_argument("--version", action="version", version=f"omniref {version('omniref')}")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = build_parser().parse_args(argv)
+    server = create_server()
+    if args.transport == "stdio":
+        # stdout carries the protocol; the banner would corrupt it.
+        server.run(transport="stdio", show_banner=False)
+    else:
+        server.run(transport="http", host=args.host, port=args.port)
 
 
 if __name__ == "__main__":
