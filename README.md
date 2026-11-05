@@ -25,13 +25,6 @@ uv run omniref                         # stdio
 uv run omniref --transport http        # http://127.0.0.1:8000/mcp
 ```
 
-### From PyPI
-
-```bash
-uvx omniref                    # stdio
-uvx omniref --transport http   # http
-```
-
 ### From a GitHub release
 
 Each tag `vX.Y.Z` publishes a wheel and sdist on the [Releases page](https://github.com/kaustubhkagrawal/omniref/releases) and a container image on GHCR.
@@ -46,7 +39,7 @@ docker run --rm -p 127.0.0.1:8000:8000 ghcr.io/kaustubhkagrawal/omniref:0.1.0
 
 ```bash
 # stdio
-claude mcp add omniref -- uvx omniref
+claude mcp add omniref -- uvx --from git+https://github.com/kaustubhkagrawal/omniref omniref
 # http
 claude mcp add --transport http omniref http://127.0.0.1:8000/mcp
 ```
@@ -58,7 +51,7 @@ Generic stdio config (Claude Desktop, Cursor):
   "mcpServers": {
     "omniref": {
       "command": "uvx",
-      "args": ["omniref"]
+      "args": ["--from", "git+https://github.com/kaustubhkagrawal/omniref", "omniref"]
     }
   }
 }
@@ -66,11 +59,7 @@ Generic stdio config (Claude Desktop, Cursor):
 
 ## Releasing
 
-Bump `version` in `pyproject.toml`, merge to `main`, then `git tag vX.Y.Z && git push origin vX.Y.Z`. The release workflow checks the tag matches `pyproject.toml`, runs lint and tests, builds the artifacts, publishes to PyPI, creates the GitHub Release, and pushes `ghcr.io/kaustubhkagrawal/omniref`. Tags with a hyphen (e.g. `v0.2.0-rc1`) are marked prerelease and do not move `latest`.
-
-### One-time PyPI setup
-
-Add a [pending trusted publisher](https://pypi.org/manage/account/publishing/) on PyPI: project `omniref`, owner `kaustubhkagrawal`, repo `omniref`, workflow `release.yml`, environment `pypi`. Then create a `pypi` environment in the repo settings (optionally with required reviewers).
+Bump `version` in `pyproject.toml`, merge to `main`, then `git tag vX.Y.Z && git push origin vX.Y.Z`. The release workflow checks the tag matches `pyproject.toml`, runs lint and tests, builds the artifacts, creates the GitHub Release, and pushes `ghcr.io/kaustubhkagrawal/omniref`. Tags with a hyphen (e.g. `v0.2.0-rc1`) are marked prerelease and do not move `latest`.
 
 ## Tools
 

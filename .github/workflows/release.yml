@@ -1,6 +1,6 @@
 name: Release
 
-# Push a tag like v0.1.0 to publish: PyPI, GitHub Release (wheel + sdist) and a GHCR image.
+# Push a tag like v0.1.0 to publish: GitHub Release (wheel + sdist) and a GHCR image.
 on:
   push:
     tags: ["v*"]
@@ -26,19 +26,6 @@ jobs:
         with:
           name: dist
           path: dist/
-
-  pypi:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write  # PyPI trusted publishing (OIDC); no API token stored
-    steps:
-      - uses: actions/download-artifact@v8.0.2
-        with:
-          name: dist
-          path: dist/
-      - uses: pypa/gh-action-pypi-publish@v1.14.3
 
   github-release:
     needs: build
